@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Snich {
     public static void main(String[] args) {
         String logo = """
@@ -29,5 +31,21 @@ public class Snich {
 """;
         System.out.println("Hello from\n" + logo);
         System.out.println(art);
+        System.out.println("What can I do for you?");
+        Scanner input = new Scanner(System.in);
+
+        while (true) {
+            System.out.print("You: ");
+            String userInput = input.nextLine();
+
+            if (userInput.equalsIgnoreCase("bye")) {
+                System.out.println("Bot: Bye. Hope to see you again soon!");
+                break; // exit loop
+            } else {
+                System.out.println("Bot: " + userInput);
+            }
+        }
+
+        input.close();
     }
 }

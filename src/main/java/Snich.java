@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Snich {
     public static void main(String[] args) {
@@ -33,6 +35,7 @@ public class Snich {
         System.out.println(art);
         System.out.println("What can I do for you?");
         Scanner input = new Scanner(System.in);
+        ArrayList<String> library = new  ArrayList<String>();
 
         while (true) {
             System.out.print("You: ");
@@ -41,8 +44,15 @@ public class Snich {
             if (userInput.equalsIgnoreCase("bye")) {
                 System.out.println("Bot: Bye. Hope to see you again soon!");
                 break; // exit loop
+            } else if (userInput.equalsIgnoreCase("list")) {
+                AtomicInteger counter = new AtomicInteger(1);
+                library.forEach(x -> {
+                    System.out.println(counter + ". " + x);
+                    counter.addAndGet(1);
+                });
             } else {
-                System.out.println("Bot: " + userInput);
+                System.out.println("Added: " + userInput);
+                library.add(userInput);
             }
         }
 

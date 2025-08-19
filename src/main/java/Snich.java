@@ -3,6 +3,24 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Snich {
+
+    static ArrayList<String> library = new  ArrayList<String>();
+    static ArrayList<Boolean> checkList = new ArrayList<Boolean>();
+
+    public static void printList() {
+        AtomicInteger counter = new AtomicInteger(1);
+        library.forEach(x -> {
+            String check;
+            if (checkList.get(counter.get() - 1)) {
+                check = "X";
+            } else {
+                check = " ";
+            }
+            System.out.println(counter + ". " + "[" + check + "] " + x);
+            counter.addAndGet(1);
+        });
+    }
+
     public static void main(String[] args) {
         String logo = """
   _____ _   _ _____ _____ _    _ 
@@ -35,7 +53,9 @@ public class Snich {
         System.out.println(art);
         System.out.println("What can I do for you?");
         Scanner input = new Scanner(System.in);
-        ArrayList<String> library = new  ArrayList<String>();
+
+
+
 
         while (true) {
             System.out.print("You: ");
@@ -45,14 +65,17 @@ public class Snich {
                 System.out.println("Bot: Bye. Hope to see you again soon!");
                 break; // exit loop
             } else if (userInput.equalsIgnoreCase("list")) {
-                AtomicInteger counter = new AtomicInteger(1);
-                library.forEach(x -> {
-                    System.out.println(counter + ". " + x);
-                    counter.addAndGet(1);
-                });
+                printList();
+            } else if (userInput.startsWith("mark")) {
+                checkList.set(Integer.parseInt(userInput.substring(userInput.length() - 1)) - 1, true);
+                printList();
+            } else if (userInput.startsWith("unmark")) {
+                checkList.set(Integer.parseInt(userInput.substring(userInput.length() - 1)) - 1, false);
+                printList();
             } else {
                 System.out.println("Added: " + userInput);
                 library.add(userInput);
+                checkList.add(false);
             }
         }
 

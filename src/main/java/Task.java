@@ -1,3 +1,4 @@
+public class Task {
     private Boolean completion;
     private String taskType;
     private String task;

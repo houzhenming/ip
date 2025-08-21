@@ -94,9 +94,17 @@ public class Snich {
                 library.add(e);
                 printAdded(e);
 
-            } else {
+            } else if  (userInput.toLowerCase().startsWith("delete")) {
+                System.out.println("Noted. I've removed this task:");
+                int index = Integer.parseInt(userInput.split("\\s+")[1]) - 1;
+                printRemoved(library.get(index));
+                library.remove(index);
+            }
+
+
+            else {
                 // Unknown command; you can print a help or ignore.
-                System.out.println("Unknown command.");
+                System.out.println("nani desu ka?");
             }
         }
 
@@ -117,6 +125,14 @@ public class Snich {
         System.out.println("     Got it. I've added this task:");
         System.out.println("       " + t);
         System.out.println("     Now you have " + library.size() + " tasks in the list.");
+        System.out.println("    ____________________________________________________________");
+    }
+
+    private static void printRemoved(Todo t) {
+        System.out.println("    ____________________________________________________________");
+        System.out.println("     Got it. I've removed this task:");
+        System.out.println("       " + t);
+        System.out.println("     Now you have " + (library.size() - 1) + " tasks in the list.");
         System.out.println("    ____________________________________________________________");
     }
 }

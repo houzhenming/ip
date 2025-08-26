@@ -43,7 +43,7 @@ public class Todo {
 
         public Deadline(String Todo, String endTime) {
             super(Todo);
-            this.setTodoType(endTime);
+            this.setEndTime(endTime);
             this.setTodoType("D");
         }
 

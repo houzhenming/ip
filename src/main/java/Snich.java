@@ -1,114 +1,70 @@
-import javafx.concurrent.Task;
-
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Snich {
-
     static ArrayList<Todo> library = new ArrayList<>();
     static File storage = new File("data/toDoList.txt");
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public static void main(String[] args) throws IOException {
-
         if (!storage.exists()) {
             storage.getParentFile().mkdirs();
             storage.createNewFile();
         }
-
         initLibrary();
 
-        //<editor-fold desc="Logos">
-        String logo = """
-  _____ _   _ _____ _____ _    _ 
- / ____| \\ | |_   _/ ____| |  | |
-| (___ |  \\| | | || |    | |__| |
- \\___ \\| . ` | | || |    |  __  |
- ____) | |\\  |_| || |____| |  | |
-|_____/|_| \\_|_____\\_____|_|  |_|
-""";
-
-        String art = """
-              .-\"\"\"-.
-           .-'  _   _'-.
-         .'    (o) (o)  '.
-        /      .  _\\\\_.    \\
-       :       |  ---|      :
-       |        \\.__./      |
-       |      .-`-__-`-.    |
-      / \\    /  /\\__/\\  \\  /\\
-     /   '._/__/  \\\\/  \\__\\'  \\
-    :         /        \\       :
-    |        /  .--.    \\      |
-    |        \\ (____)   /      |
-     \\        '.__.__.' /     /
-      '._              _.'_.'
-         '-.__    __.-'.-'
-              '\"\"\"'
-""";
-        //</editor-fold>
-
-        System.out.println("Hello from\n" + logo);
-        System.out.println(art);
-        System.out.println("What can I do for you?");
-        Scanner input = new Scanner(System.in);
-
+        Ui ui = new Ui();
+        ui.showWelcome();
 
         while (true) {
-            System.out.print("You: ");
-            String userInput = input.nextLine().trim();
+            String userInput = ui.readCommand();
 
             if (userInput.equalsIgnoreCase("bye")) {
-                System.out.println("Bot: Bye. Hope to see you again soon!");
+                ui.showGoodbye();
                 break;
 
             } else if (userInput.equalsIgnoreCase("list")) {
-                printList();
+                ui.showList(library);
 
             } else if (userInput.toLowerCase().startsWith("mark")) {
                 int index = Integer.parseInt(userInput.split("\\s+")[1]) - 1;
                 Todo t = library.get(index);
                 t.setCompletion(true);
                 writeToStorage(t, index);
-                printList();
+                ui.showList(library);
 
             } else if (userInput.toLowerCase().startsWith("unmark")) {
                 int index = Integer.parseInt(userInput.split("\\s+")[1]) - 1;
                 Todo t = library.get(index);
                 t.setCompletion(false);
                 writeToStorage(t, index);
-                printList();
+                ui.showList(library);
 
             } else if (userInput.toLowerCase().startsWith("todo")) {
                 String desc = userInput.substring(4).trim();
                 Todo t = new Todo(desc);
                 library.add(t);
-                printAdded(t);
+                ui.showAdded(t, library.size());
                 writeToStorage(t, library.size() - 1);
 
             } else if (userInput.toLowerCase().startsWith("deadline")) {
-                // e.g. deadline return book /by 2025-08-30 18:00
                 String[] parts = userInput.substring(8).split("/by", 2);
                 String desc = parts[0].trim();
                 LocalDateTime by = LocalDateTime.parse(parts[1].trim(), FORMATTER);
                 Todo.Deadline d = new Todo.Deadline(desc, by);
                 library.add(d);
-                printAdded(d);
+                ui.showAdded(d, library.size());
                 writeToStorage(d, library.size() - 1);
 
             } else if (userInput.toLowerCase().startsWith("event")) {
-                // e.g. event project meeting /from 2025-08-28 14:00 /to 2025-08-28 16:00
                 String[] p1 = userInput.substring(5).split("/from", 2);
                 String desc = p1[0].trim();
                 String[] p2 = p1[1].split("/to", 2);
@@ -116,22 +72,20 @@ public class Snich {
                 LocalDateTime to = LocalDateTime.parse(p2[1].trim(), FORMATTER);
                 Todo.Event e = new Todo.Event(desc, from, to);
                 library.add(e);
-                printAdded(e);
+                ui.showAdded(e, library.size());
                 writeToStorage(e, library.size() - 1);
 
-            } else if  (userInput.toLowerCase().startsWith("delete")) {
+            } else if (userInput.toLowerCase().startsWith("delete")) {
                 int index = Integer.parseInt(userInput.split("\\s+")[1]) - 1;
-                System.out.println("Noted. I've removed this task:");
-                printRemoved(library.get(index));
+                Todo removed = library.get(index);
+                ui.showRemoved(removed, library.size() - 1);
                 library.remove(index);
                 deleteFromStorage(index);
 
             } else {
-                System.out.println("nani desu ka?");
+                ui.showUnknown();
             }
         }
-
-        input.close();
     }
 
     // ---------------- helper methods ----------------

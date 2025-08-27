@@ -1,16 +1,31 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Todo {
     private Boolean completion;
     private String todoType;
     private String todo;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
-    public Todo(String Todo) {
+    public Todo(String todo) {
         this.completion = false;
         this.setTodoType("T");
-        this.todo = Todo;
+        this.todo = todo;
     }
 
-    void setTodoType(String TodoType) {
-        this.todoType = TodoType;
+    public Todo(String todo, LocalDateTime startTime, LocalDateTime endTime) {
+        this.completion = false;
+        this.todo = todo;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    public static final DateTimeFormatter STORAGE_FORMAT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    void setTodoType(String todoType) {
+        this.todoType = todoType;
     }
 
     public Boolean getCompletion() {
@@ -29,6 +44,22 @@ public class Todo {
         return todo;
     }
 
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
     @Override
     public String toString(){
         String x = this.getCompletion() ? "X" : " ";
@@ -38,62 +69,38 @@ public class Todo {
                 this.getTodo());
     }
 
-    public static class Deadline extends Todo {
-        private String endTime;
+    // ---------------- Subclasses ----------------
 
-        public Deadline(String Todo, String endTime) {
-            super(Todo);
-            this.setEndTime(endTime);
+    public static class Deadline extends Todo {
+
+        public Deadline(String todo, LocalDateTime endTime) {
+            super(todo, null, endTime);
             this.setTodoType("D");
         }
 
-        void setEndTime(String endTime) {
-            this.endTime = endTime;
-        }
-
-        public String getEndTime() {
-            return endTime;
-        }
-
         @Override
-        public String toString(){
+        public String toString() {
             String x = this.getCompletion() ? "X" : " ";
+            String by = (getEndTime() == null) ? "-" : getEndTime().format(STORAGE_FORMAT);
             return String.format("[%s] [%s] %s (by %s)",
-                    this.getTodoType(),
-                    x,
-                    this.getTodo(),
-                    this.getEndTime());
+                    this.getTodoType(), x, this.getTodo(), by);
         }
-
     }
 
-    public static class Event extends Deadline {
-        private String startTime;
+    public static class Event extends Todo {
 
-        public Event(String Todo, String startTime, String endTime) {
-            super(Todo, endTime);
-            this.setStartTime(startTime);
-            this.setEndTime(endTime);
+        public Event(String todo, LocalDateTime startTime, LocalDateTime endTime) {
+            super(todo, startTime, endTime);
             this.setTodoType("E");
         }
 
-        void setStartTime(String startTime) {
-            this.startTime = startTime;
-        }
-
-        public String getStartTime() {
-            return startTime;
-        }
-
         @Override
-        public String toString(){
+        public String toString() {
             String x = this.getCompletion() ? "X" : " ";
+            String from = (getStartTime() == null) ? "-" : getStartTime().format(STORAGE_FORMAT);
+            String to   = (getEndTime() == null)   ? "-" : getEndTime().format(STORAGE_FORMAT);
             return String.format("[%s] [%s] %s (from: %s to: %s)",
-                    this.getTodoType(),
-                    x,
-                    this.getTodo(),
-                    this.getStartTime(),
-                    this.getEndTime());
+                    this.getTodoType(), x, this.getTodo(), from, to);
         }
     }
 }

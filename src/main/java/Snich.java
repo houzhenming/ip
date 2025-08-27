@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ public class Snich {
 
     static ArrayList<Todo> library = new ArrayList<>();
     static File storage = new File("data/toDoList.txt");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public static void main(String[] args) throws IOException {
 
@@ -74,7 +77,6 @@ public class Snich {
                 printList();
 
             } else if (userInput.toLowerCase().startsWith("mark")) {
-                // e.g. "mark 1"
                 int index = Integer.parseInt(userInput.split("\\s+")[1]) - 1;
                 Todo t = library.get(index);
                 t.setCompletion(true);
@@ -82,7 +84,6 @@ public class Snich {
                 printList();
 
             } else if (userInput.toLowerCase().startsWith("unmark")) {
-                // e.g. "unmark 1"
                 int index = Integer.parseInt(userInput.split("\\s+")[1]) - 1;
                 Todo t = library.get(index);
                 t.setCompletion(false);
@@ -90,7 +91,6 @@ public class Snich {
                 printList();
 
             } else if (userInput.toLowerCase().startsWith("todo")) {
-                // "todo borrow book"
                 String desc = userInput.substring(4).trim();
                 Todo t = new Todo(desc);
                 library.add(t);
@@ -98,38 +98,35 @@ public class Snich {
                 writeToStorage(t, library.size() - 1);
 
             } else if (userInput.toLowerCase().startsWith("deadline")) {
-                // "deadline return book /by Sunday"
+                // e.g. deadline return book /by 2025-08-30 18:00
                 String[] parts = userInput.substring(8).split("/by", 2);
                 String desc = parts[0].trim();
-                String by = parts[1].trim();
+                LocalDateTime by = LocalDateTime.parse(parts[1].trim(), FORMATTER);
                 Todo.Deadline d = new Todo.Deadline(desc, by);
                 library.add(d);
                 printAdded(d);
                 writeToStorage(d, library.size() - 1);
 
             } else if (userInput.toLowerCase().startsWith("event")) {
-                // "event project meeting /from Mon 2pm /to 4pm"
+                // e.g. event project meeting /from 2025-08-28 14:00 /to 2025-08-28 16:00
                 String[] p1 = userInput.substring(5).split("/from", 2);
                 String desc = p1[0].trim();
                 String[] p2 = p1[1].split("/to", 2);
-                String from = p2[0].trim();
-                String to = p2[1].trim();
+                LocalDateTime from = LocalDateTime.parse(p2[0].trim(), FORMATTER);
+                LocalDateTime to = LocalDateTime.parse(p2[1].trim(), FORMATTER);
                 Todo.Event e = new Todo.Event(desc, from, to);
                 library.add(e);
                 printAdded(e);
                 writeToStorage(e, library.size() - 1);
 
             } else if  (userInput.toLowerCase().startsWith("delete")) {
-                System.out.println("Noted. I've removed this task:");
                 int index = Integer.parseInt(userInput.split("\\s+")[1]) - 1;
+                System.out.println("Noted. I've removed this task:");
                 printRemoved(library.get(index));
                 library.remove(index);
                 deleteFromStorage(index);
-            }
 
-
-            else {
-                // Unknown command; you can print a help or ignore.
+            } else {
                 System.out.println("nani desu ka?");
             }
         }
@@ -137,42 +134,35 @@ public class Snich {
         input.close();
     }
 
+    // ---------------- helper methods ----------------
     private static void printList() {
-        System.out.println("    ____________________________________________________________");
-        System.out.println("     Here are the tasks in your list:");
+        System.out.println("Here are the tasks in your list:");
         for (int i = 0; i < library.size(); i++) {
-            System.out.println("     " + (i + 1) + "." + library.get(i));
+            System.out.println((i + 1) + "." + library.get(i));
         }
-        System.out.println("    ____________________________________________________________");
     }
 
     private static void printAdded(Todo t) {
-        System.out.println("    ____________________________________________________________");
-        System.out.println("     Got it. I've added this task:");
-        System.out.println("       " + t);
-        System.out.println("     Now you have " + library.size() + " tasks in the list.");
-        System.out.println("    ____________________________________________________________");
+        System.out.println("Got it. I've added this task:");
+        System.out.println("  " + t);
+        System.out.println("Now you have " + library.size() + " tasks.");
     }
 
     private static void printRemoved(Todo t) {
-        System.out.println("    ____________________________________________________________");
-        System.out.println("     Got it. I've removed this task:");
-        System.out.println("       " + t);
-        System.out.println("     Now you have " + (library.size() - 1) + " tasks in the list.");
-        System.out.println("    ____________________________________________________________");
+        System.out.println("Removed task: " + t);
+        System.out.println("Now you have " + (library.size()) + " tasks.");
     }
 
     private static void writeToStorage(Todo t, int index) throws IOException {
         Path path = Paths.get(storage.getAbsolutePath());
-        List<String> lines = Files.readAllLines(path);
+        List<String> lines = Files.exists(path) ? Files.readAllLines(path) : new ArrayList<>();
 
-        if (lines.isEmpty() || index >= lines.size()) {
+        if (index >= lines.size()) {
             lines.add(t.toString());
-            Files.write(path, lines);
         } else {
             lines.set(index, t.toString());
-            Files.write(path, lines);
         }
+        Files.write(path, lines);
     }
 
     private static void deleteFromStorage(int index) throws IOException {
@@ -187,8 +177,7 @@ public class Snich {
         Scanner sc = new Scanner(storage);
         while (sc.hasNextLine()) {
             String line = sc.nextLine().trim();
-
-            if (line.isEmpty()) continue; // skip blank lines
+            if (line.isEmpty()) continue;
 
             String type = line.substring(1, 2);   // T, D, or E
             boolean completed = line.charAt(4) == 'X';
@@ -200,14 +189,17 @@ public class Snich {
             } else if (type.equals("D")) {
                 int byIdx = line.indexOf("(by");
                 String desc = line.substring(7, byIdx).trim();
-                String by = line.substring(byIdx + 4, line.length() - 1).trim();
+                String byStr = line.substring(byIdx + 4, line.length() - 1).trim();
+                LocalDateTime by = LocalDateTime.parse(byStr, FORMATTER);
                 task = new Todo.Deadline(desc, by);
             } else if (type.equals("E")) {
                 int fromIdx = line.indexOf("(from:");
                 int toIdx = line.indexOf("to:", fromIdx);
                 String desc = line.substring(7, fromIdx).trim();
-                String from = line.substring(fromIdx + 6, toIdx).trim();
-                String to = line.substring(toIdx + 3, line.length() - 1).trim();
+                String fromStr = line.substring(fromIdx + 6, toIdx).trim();
+                String toStr = line.substring(toIdx + 3, line.length() - 1).trim();
+                LocalDateTime from = LocalDateTime.parse(fromStr, FORMATTER);
+                LocalDateTime to = LocalDateTime.parse(toStr, FORMATTER);
                 task = new Todo.Event(desc, from, to);
             }
 

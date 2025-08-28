@@ -1,3 +1,5 @@
+package todo;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +25,7 @@ public class TodoList {
         return Collections.unmodifiableList(items);
     }
 
-    /** Add any Todo (Todo, Deadline, Event). Returns the added task. */
+    /** Add any todo.Todo (todo.Todo, Deadline, Event). Returns the added task. */
     public Todo add(Todo t) {
         if (t == null) throw new IllegalArgumentException("Task cannot be null");
         items.add(t);
@@ -62,7 +64,7 @@ public class TodoList {
         return items.size(); // new item is last → 1-based index
     }
 
-    /** Zero-based index for Storage.saveAt/deleteAt interop. */
+    /** Zero-based index for snich.storage.Storage.saveAt/deleteAt interop. */
     public static int toZeroBased(int oneBasedIndex) {
         if (oneBasedIndex <= 0) {
             throw new IllegalArgumentException("Index must be >= 1 (was " + oneBasedIndex + ")");

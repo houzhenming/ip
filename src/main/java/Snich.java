@@ -1,8 +1,14 @@
+import storage.Storage;
+import todo.Todo;
+import todo.TodoList;
+import ui.Parser;
+import ui.Ui;
+
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 public class Snich {
-    static TodoList todoList = new TodoList();   // ⬅️ was ArrayList<Todo>
+    static TodoList todoList = new TodoList();   // ⬅️ was ArrayList<todo.Todo>
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 

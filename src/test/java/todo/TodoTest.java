@@ -1,7 +1,6 @@
-package snich;  // same package as the class being tested
+package todo;  // same package as the class being tested
 
 import org.junit.jupiter.api.Test;
-import todo.Todo;
 
 import java.time.LocalDateTime;
 
@@ -51,14 +50,4 @@ public class TodoTest {
         assertEquals("[E] [ ] Team meeting (from: - to: -)", e.toString());
     }
 
-    // Dummy tests in the style you showed (optional)
-    @Test
-    public void dummyTest() {
-        assertEquals(2, 2);
-    }
-
-    @Test
-    public void anotherDummyTest() {
-        assertEquals(4, 4);
-    }
 }

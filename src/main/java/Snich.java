@@ -7,6 +7,9 @@ import ui.Ui;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
+/*
+Main class for handling flow of logic of Chatbot.
+ */
 public class Snich {
     static TodoList todoList = new TodoList();   // ⬅️ was ArrayList<todo.Todo>
     private static final DateTimeFormatter FORMATTER =
@@ -23,6 +26,7 @@ public class Snich {
 
         Parser parser = new Parser(Todo.STORAGE_FORMAT);
 
+        //Main logic for Snich.
         while (true) {
             String userInput = ui.readCommand();
 

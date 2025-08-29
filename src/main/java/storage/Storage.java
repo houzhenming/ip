@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/*
+Storage class for writing to long term storge.
+Allows for memory between boot ups.
+ */
 public class Storage {
     private final File storageFile;
     private final DateTimeFormatter formatter;
@@ -31,7 +35,7 @@ public class Storage {
         }
     }
 
-    /** Load tasks from storage and return them. */
+    /** Load tasks from storage and return them in a List. */
     public List<Todo> load() throws IOException {
         List<Todo> loaded = new ArrayList<>();
         try (Scanner sc = new Scanner(storageFile)) {

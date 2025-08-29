@@ -4,10 +4,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/*
+Main class for pasrsing and understanding user inputs.
+ */
 public class Parser {
 
     public enum CommandType { BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, UNKNOWN }
 
+    /*
+    A single class to keep track and parse all possible inputs.
+     */
     public static class ParsedCommand {
         public final CommandType type;
         public final String desc;           // for TODO / DEADLINE / EVENT
@@ -47,19 +53,23 @@ public class Parser {
         this.formatter = formatter;
     }
 
+    /*
+    Main logic for parsing user input.
+    Returns a ParsedCommand Object for main Snich class with all information to handle.
+     */
     public ParsedCommand parse(String input) {
-        if (input == null) return ParsedCommand.unknown();
+        if (input == null) {return ParsedCommand.unknown();}
         String s = input.trim();
-        if (s.isEmpty()) return ParsedCommand.unknown();
+        if (s.isEmpty()) {return ParsedCommand.unknown();}
 
         String lower = s.toLowerCase();
 
-        if (lower.equals("bye"))  return ParsedCommand.bye();
-        if (lower.equals("list")) return ParsedCommand.list();
+        if (lower.equals("bye")) {return ParsedCommand.bye();}
+        if (lower.equals("list")) {return ParsedCommand.list();}
 
-        if (lower.startsWith("mark"))   return ParsedCommand.mark(extractIndex(s, "mark"));
-        if (lower.startsWith("unmark")) return ParsedCommand.unmark(extractIndex(s, "unmark"));
-        if (lower.startsWith("delete")) return ParsedCommand.del(extractIndex(s, "delete"));
+        if (lower.startsWith("mark")) {return ParsedCommand.mark(extractIndex(s, "mark"));}
+        if (lower.startsWith("unmark")) {return ParsedCommand.unmark(extractIndex(s, "unmark"));}
+        if (lower.startsWith("delete")) {return ParsedCommand.del(extractIndex(s, "delete"));}
 
         if (lower.startsWith("todo")) {
             String desc = s.substring(4).trim();

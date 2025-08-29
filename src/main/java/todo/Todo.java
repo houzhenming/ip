@@ -3,6 +3,10 @@ package todo;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/*
+Each Todo instance is a task to be recorded.
+Also holds and record relevant information relating to that task.
+ */
 public class Todo {
     private Boolean completion;
     private String todoType;

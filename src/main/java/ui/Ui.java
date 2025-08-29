@@ -5,6 +5,9 @@ import todo.Todo;
 import java.util.List;
 import java.util.Scanner;
 
+/*
+Main class for handling user inputs.
+ */
 public class Ui {
     private final Scanner in = new Scanner(System.in);
 
@@ -51,6 +54,9 @@ public class Ui {
         System.out.println("Bot: Bye. Hope to see you again soon!");
     }
 
+    /*
+    Prints all tasks in record, along with their completion status and type.
+     */
     public void showList(List<Todo> tasks) {
         System.out.println("Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {

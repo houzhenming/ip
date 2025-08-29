@@ -71,4 +71,9 @@ public class TodoList {
         }
         return oneBasedIndex - 1;
     }
+
+    /** Find all Todos in items which contains given description. */
+    public List<Todo> filter (String desc) {
+        return items.stream().filter(x-> x.getTodo().contains(desc)).toList();
+    }
 }

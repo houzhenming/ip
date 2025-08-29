@@ -6,7 +6,7 @@ import java.time.format.DateTimeParseException;
 
 public class Parser {
 
-    public enum CommandType { BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, UNKNOWN }
+    public enum CommandType { BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, UNKNOWN, FIND }
 
     public static class ParsedCommand {
         public final CommandType type;
@@ -31,6 +31,7 @@ public class Parser {
         public static ParsedCommand mark(int idx) { return new ParsedCommand(CommandType.MARK, null, idx, null, null, null); }
         public static ParsedCommand unmark(int idx) { return new ParsedCommand(CommandType.UNMARK, null, idx, null, null, null); }
         public static ParsedCommand del(int idx) { return new ParsedCommand(CommandType.DELETE, null, idx, null, null, null); }
+        public static ParsedCommand find(String d) { return new ParsedCommand(CommandType.FIND, d, null, null, null, null); }
         public static ParsedCommand todo(String d) { return new ParsedCommand(CommandType.TODO, d, null, null, null, null); }
         public static ParsedCommand deadline(String d, LocalDateTime by) {
             return new ParsedCommand(CommandType.DEADLINE, d, null, null, null, by);
@@ -60,6 +61,12 @@ public class Parser {
         if (lower.startsWith("mark"))   return ParsedCommand.mark(extractIndex(s, "mark"));
         if (lower.startsWith("unmark")) return ParsedCommand.unmark(extractIndex(s, "unmark"));
         if (lower.startsWith("delete")) return ParsedCommand.del(extractIndex(s, "delete"));
+
+        if (lower.startsWith("find")) {
+            String desc = s.substring(4).trim();
+            if (desc.isEmpty()) throw new IllegalArgumentException("find description cannot be empty");
+            return ParsedCommand.find(desc);
+        }
 
         if (lower.startsWith("todo")) {
             String desc = s.substring(4).trim();

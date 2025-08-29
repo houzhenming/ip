@@ -71,4 +71,18 @@ public class TodoList {
         }
         return oneBasedIndex - 1;
     }
+
+    /** Find all Todos in items which contains given description. */
+    public List<Todo> filter (String desc) {
+        if (desc == null || desc.isEmpty()) {
+            return List.of();
+        }
+        String needle = desc.toLowerCase();
+        return items.stream()
+                .filter(x -> {
+                    String haystack = x.getTodo();
+                    return haystack != null && haystack.toLowerCase().contains(needle);
+                })
+                .toList();
+    }
 }

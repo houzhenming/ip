@@ -58,6 +58,13 @@ public class Ui {
         }
     }
 
+    public void showFind(List<Todo> tasks) {
+        System.out.println("Here are the tasks that match your description:");
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println((i + 1) + "." + tasks.get(i));
+        }
+    }
+
     public void showAdded(Todo t, int total) {
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + t);

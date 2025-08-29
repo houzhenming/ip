@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 public class Snich {
-    static TodoList todoList = new TodoList();   // ⬅️ was ArrayList<todo.Todo>
+    static TodoList todoList = new TodoList();
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -39,10 +39,15 @@ public class Snich {
                     ui.showGoodbye();
                     return;
 
-                case LIST:
+                case LIST: {
                     ui.showList(todoList.asList());
                     break;
+                }
 
+                case FIND: {
+                    ui.showFind(todoList.filter(pc.desc));
+                    break;
+                }
                 case MARK: {
                     Todo t = todoList.mark(pc.index);
                     storage.saveAt(t, TodoList.toZeroBased(pc.index));

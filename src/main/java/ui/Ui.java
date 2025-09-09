@@ -11,7 +11,7 @@ public class Ui {
     private static final String LOGO = """
   _____ _   _ _____ _____ _    _ 
  / ____| \\ | |_   _/ ____| |  | |
-| (___ |  \\| | | || |    | |__| |
+| (___ |  \\| | || |    | |__| |
  \\___ \\| . ` | | || |    |  __  |
  ____) | |\\  |_| || |____| |  | |
 |_____/|_| \\_|_____\\_____|_|  |_|
@@ -36,51 +36,65 @@ public class Ui {
               '\"\"\"'
 """;
 
-    public void showWelcome() {
-        System.out.println("Hello from\n" + LOGO);
-        System.out.println(ART);
-        System.out.println("What can I do for you?");
+    // ---- changed from void: now returns the full welcome text ----
+    public String showWelcome() {
+        // previously printed on three separate lines; replicate with newlines
+        return "Hello from\n" + LOGO + "\n" + ART + "\nWhat can I do for you?";
     }
 
+    // unchanged: still prompts and returns the user’s input
     public String readCommand() {
         System.out.print("You: ");
         return in.nextLine().trim();
     }
 
-    public void showGoodbye() {
-        System.out.println("Bot: Bye. Hope to see you again soon!");
+    // ---- changed from void ----
+    public String showGoodbye() {
+        return "Bot: Bye. Hope to see you again soon!";
     }
 
-    public void showList(List<Todo> tasks) {
-        System.out.println("Here are the tasks in your list:");
+    // ---- changed from void ----
+    public String showList(List<Todo> tasks) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Here are the tasks in your list:\n");
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println((i + 1) + "." + tasks.get(i));
+            sb.append(i + 1).append('.').append(tasks.get(i)).append('\n');
         }
+        // Trim the trailing newline to match typical single-print behavior
+        return sb.toString().trim();
     }
 
-    public void showFind(List<Todo> tasks) {
-        System.out.println("Here are the tasks that match your description:");
+    // ---- changed from void ----
+    public String showFind(List<Todo> tasks) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Here are the tasks that match your description:\n");
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println((i + 1) + "." + tasks.get(i));
+            sb.append(i + 1).append('.').append(tasks.get(i)).append('\n');
         }
+        return sb.toString().trim();
     }
 
-    public void showAdded(Todo t, int total) {
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + t);
-        System.out.println("Now you have " + total + " tasks.");
+    // ---- changed from void ----
+    public String showAdded(Todo t, int total) {
+        // exactly what was printed, line by line
+        return "Got it. I've added this task:\n"
+                + "  " + t + "\n"
+                + "Now you have " + total + " tasks.";
     }
 
-    public void showRemoved(Todo t, int totalAfterRemoval) {
-        System.out.println("Removed task: " + t);
-        System.out.println("Now you have " + totalAfterRemoval + " tasks.");
+    // ---- changed from void ----
+    public String showRemoved(Todo t, int totalAfterRemoval) {
+        return "Removed task: " + t + "\n"
+                + "Now you have " + totalAfterRemoval + " tasks.";
     }
 
-    public void showUnknown() {
-        System.out.println("nani desu ka?");
+    // ---- changed from void ----
+    public String showUnknown() {
+        return "nani desu ka?";
     }
 
-    public void showError(String message) {
-        System.out.println("Error: " + message);
+    // ---- changed from void ----
+    public String showError(String message) {
+        return "Error: " + message;
     }
 }

@@ -35,6 +35,8 @@ public class Snich {
             ui.showError(ex.getMessage());
         }
 
+        assert pc != null : "Parser should never return null";
+
         switch (pc.type) {
             case BYE:
                 return ui.showGoodbye();
@@ -47,18 +49,21 @@ public class Snich {
                 return ui.showFind(todoList.filter(pc.desc));
             }
             case MARK: {
+                assert pc.index > 0 && pc.index <= todoList.size() : "Index out of range: " + pc.index;
                 Todo t = todoList.mark(pc.index);
                 storage.saveAt(t, TodoList.toZeroBased(pc.index));
                 return ui.showList(todoList.asList());
             }
 
             case UNMARK: {
+                assert pc.index > 0 && pc.index <= todoList.size() : "Index out of range: " + pc.index;
                 Todo t = todoList.unmark(pc.index);
                 storage.saveAt(t, TodoList.toZeroBased(pc.index));
                 return ui.showList(todoList.asList());
             }
 
             case DELETE: {
+                assert pc.index > 0 && pc.index <= todoList.size() : "Index out of range: " + pc.index;
                 Todo removed = todoList.remove(pc.index);
                 storage.deleteAt(TodoList.toZeroBased(pc.index));
                 return ui.showRemoved(removed, todoList.size());

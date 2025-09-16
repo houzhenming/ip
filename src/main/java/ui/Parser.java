@@ -6,7 +6,7 @@ import java.time.format.DateTimeParseException;
 
 public class Parser {
 
-    public enum CommandType { BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, UNKNOWN, FIND }
+    public enum CommandType { BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, UNKNOWN, FIND, REBASE }
 
     public static class ParsedCommand {
         public final CommandType type;
@@ -15,31 +15,36 @@ public class Parser {
         public final LocalDateTime from;    // for EVENT
         public final LocalDateTime to;      // for EVENT
         public final LocalDateTime by;      // for DEADLINE
+        public final String filepath;
 
         private ParsedCommand(CommandType type, String desc, Integer index,
-                              LocalDateTime from, LocalDateTime to, LocalDateTime by) {
+                              LocalDateTime from, LocalDateTime to, LocalDateTime by, String filepath) {
             this.type = type;
             this.desc = desc;
             this.index = index;
             this.from = from;
             this.to = to;
             this.by = by;
+            this.filepath = filepath;
         }
 
-        public static ParsedCommand bye() { return new ParsedCommand(CommandType.BYE, null, null, null, null, null); }
-        public static ParsedCommand list() { return new ParsedCommand(CommandType.LIST, null, null, null, null, null); }
-        public static ParsedCommand mark(int idx) { return new ParsedCommand(CommandType.MARK, null, idx, null, null, null); }
-        public static ParsedCommand unmark(int idx) { return new ParsedCommand(CommandType.UNMARK, null, idx, null, null, null); }
-        public static ParsedCommand del(int idx) { return new ParsedCommand(CommandType.DELETE, null, idx, null, null, null); }
-        public static ParsedCommand find(String d) { return new ParsedCommand(CommandType.FIND, d, null, null, null, null); }
-        public static ParsedCommand todo(String d) { return new ParsedCommand(CommandType.TODO, d, null, null, null, null); }
+        public static ParsedCommand bye() { return new ParsedCommand(CommandType.BYE, null, null, null, null, null, null); }
+        public static ParsedCommand list() { return new ParsedCommand(CommandType.LIST, null, null, null, null, null, null); }
+        public static ParsedCommand mark(int idx) { return new ParsedCommand(CommandType.MARK, null, idx, null, null, null, null); }
+        public static ParsedCommand unmark(int idx) { return new ParsedCommand(CommandType.UNMARK, null, idx, null, null, null, null); }
+        public static ParsedCommand del(int idx) { return new ParsedCommand(CommandType.DELETE, null, idx, null, null, null, null); }
+        public static ParsedCommand find(String d) { return new ParsedCommand(CommandType.FIND, d, null, null, null, null, null); }
+        public static ParsedCommand todo(String d) { return new ParsedCommand(CommandType.TODO, d, null, null, null, null, null); }
         public static ParsedCommand deadline(String d, LocalDateTime by) {
-            return new ParsedCommand(CommandType.DEADLINE, d, null, null, null, by);
+            return new ParsedCommand(CommandType.DEADLINE, d, null, null, null, by, null);
         }
         public static ParsedCommand event(String d, LocalDateTime from, LocalDateTime to) {
-            return new ParsedCommand(CommandType.EVENT, d, null, from, to, null);
+            return new ParsedCommand(CommandType.EVENT, d, null, from, to, null, null);
         }
-        public static ParsedCommand unknown() { return new ParsedCommand(CommandType.UNKNOWN, null, null, null, null, null); }
+        public static ParsedCommand rebase(String newPath) {
+            return new ParsedCommand(CommandType.REBASE, null, null, null, null, null, newPath);
+        }
+        public static ParsedCommand unknown() { return new ParsedCommand(CommandType.UNKNOWN, null, null, null, null, null, null); }
     }
 
     private final DateTimeFormatter formatter; // use "yyyy-MM-dd HH:mm" (no 'T')
@@ -98,6 +103,14 @@ public class Parser {
             if (desc.isEmpty()) throw new IllegalArgumentException("event description cannot be empty");
             if (to.isBefore(from)) throw new IllegalArgumentException("event '/to' must be after '/from'");
             return ParsedCommand.event(desc, from, to);
+        }
+
+        if (lower.startsWith("rebase:")) {
+            String path = s.substring(7).trim(); // after "rebase:"
+            if (path.isEmpty()) {
+                throw new IllegalArgumentException("rebase requires a file path");
+            }
+            return ParsedCommand.rebase(path);
         }
 
         return ParsedCommand.unknown();

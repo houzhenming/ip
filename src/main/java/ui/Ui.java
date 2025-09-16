@@ -97,4 +97,8 @@ public class Ui {
     public String showError(String message) {
         return "Error: " + message;
     }
+
+    public String showRebased(String filepath) {
+        return "New storage location: " + filepath;
+    }
 }

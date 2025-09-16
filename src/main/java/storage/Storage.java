@@ -14,12 +14,17 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Storage {
-    private final File storageFile;
+    private File storageFile;
     private final DateTimeFormatter formatter;
 
     public Storage(String filepath, DateTimeFormatter formatter) throws IOException {
         this.storageFile = new File(filepath);
         this.formatter = formatter;
+        ensureFile();
+    }
+
+    public void newFilePath(String filepath) throws IOException {
+        this.storageFile = new File(filepath);
         ensureFile();
     }
 

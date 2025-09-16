@@ -25,11 +25,30 @@ public class TodoList {
         return Collections.unmodifiableList(items);
     }
 
+    /** Clears current list. */
+    public void clear() {
+        items.clear();
+    }
+
     /** Add any todo.Todo (todo.Todo, Deadline, Event). Returns the added task. */
     public Todo add(Todo t) {
         if (t == null) throw new IllegalArgumentException("Task cannot be null");
         items.add(t);
         return t;
+    }
+
+    /** Add a list of todos. Returns the number of tasks added. */
+    public int add(List<Todo> todos) {
+        if (todos == null) {
+            throw new IllegalArgumentException("Task list cannot be null");
+        }
+        for (Todo t : todos) {
+            if (t == null) {
+                throw new IllegalArgumentException("Task list contains null task");
+            }
+        }
+        items.addAll(todos);
+        return todos.size();
     }
 
     /** Remove by 1-based index (as users see). Returns the removed task. */

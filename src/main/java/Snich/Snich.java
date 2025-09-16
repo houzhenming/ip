@@ -90,6 +90,13 @@ public class Snich {
                 return ui.showAdded(e, todoList.size());
             }
 
+            case REBASE: {
+                storage.newFilePath(pc.filepath);
+                todoList.clear();
+                todoList.add(storage.load());
+                return ui.showRebased(pc.filepath);
+            }
+
             default:
                 return ui.showUnknown();
         }

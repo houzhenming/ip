@@ -15,29 +15,51 @@ public class TodoList {
         this.items = new ArrayList<>(initial == null ? List.of() : initial);
     }
 
-    /** Number of tasks. */
+    /**
+     * Returns the number of tasks in the todo list.
+     *
+     * @return number of tasks
+     */
     public int size() {
         return items.size();
     }
 
-    /** Read-only view for UI rendering. */
+    /**
+     * Returns an unmodifiable view of the todo list for UI rendering.
+     *
+     * @return read-only list of todos
+     */
     public List<Todo> asList() {
         return Collections.unmodifiableList(items);
     }
 
-    /** Clears current list. */
+    /**
+     * Clears all tasks from the todo list.
+     */
     public void clear() {
         items.clear();
     }
 
-    /** Add any todo.Todo (todo.Todo, Deadline, Event). Returns the added task. */
+    /**
+     * Adds a single todo item to the list.
+     *
+     * @param t the todo item to add (must not be null)
+     * @return the added todo
+     * @throws IllegalArgumentException if the task is null
+     */
     public Todo add(Todo t) {
         if (t == null) throw new IllegalArgumentException("Task cannot be null");
         items.add(t);
         return t;
     }
 
-    /** Add a list of todos. Returns the number of tasks added. */
+    /**
+     * Adds a list of todo items to the list.
+     *
+     * @param todos the list of todos to add (must not be null and must not contain nulls)
+     * @return number of tasks added
+     * @throws IllegalArgumentException if the list is null or contains a null task
+     */
     public int add(List<Todo> todos) {
         if (todos == null) {
             throw new IllegalArgumentException("Task list cannot be null");
@@ -51,39 +73,72 @@ public class TodoList {
         return todos.size();
     }
 
-    /** Remove by 1-based index (as users see). Returns the removed task. */
+    /**
+     * Removes a task by its 1-based index.
+     *
+     * @param oneBasedIndex index of the task to remove (1-based)
+     * @return the removed task
+     * @throws IllegalArgumentException if index is invalid
+     */
     public Todo remove(int oneBasedIndex) {
         int i = toZeroBased(oneBasedIndex);
         return items.remove(i);
     }
 
-    /** Get by 1-based index (as users see). */
+    /**
+     * Retrieves a task by its 1-based index.
+     *
+     * @param oneBasedIndex index of the task to get (1-based)
+     * @return the retrieved task
+     * @throws IllegalArgumentException if index is invalid
+     */
     public Todo get(int oneBasedIndex) {
         int i = toZeroBased(oneBasedIndex);
         return items.get(i);
     }
 
-    /** Mark complete by 1-based index. Returns the task. */
+    /**
+     * Marks a task as complete by its 1-based index.
+     *
+     * @param oneBasedIndex index of the task to mark (1-based)
+     * @return the updated task
+     */
     public Todo mark(int oneBasedIndex) {
         Todo t = get(oneBasedIndex);
         t.setCompletion(true);
         return t;
     }
 
-    /** Unmark by 1-based index. Returns the task. */
+    /**
+     * Unmarks a task (sets as incomplete) by its 1-based index.
+     *
+     * @param oneBasedIndex index of the task to unmark (1-based)
+     * @return the updated task
+     */
     public Todo unmark(int oneBasedIndex) {
         Todo t = get(oneBasedIndex);
         t.setCompletion(false);
         return t;
     }
 
-    /** Append helpers that return the 1-based index for convenience. */
+    /**
+     * Adds a task and returns its new 1-based index.
+     *
+     * @param t the task to add
+     * @return 1-based index of the added task
+     */
     public int addAndIndex(Todo t) {
         add(t);
         return items.size(); // new item is last → 1-based index
     }
 
-    /** Zero-based index for snich.storage.Storage.saveAt/deleteAt interop. */
+    /**
+     * Converts a 1-based index into a 0-based index for internal use.
+     *
+     * @param oneBasedIndex index starting from 1
+     * @return zero-based index
+     * @throws IllegalArgumentException if index < 1
+     */
     public static int toZeroBased(int oneBasedIndex) {
         if (oneBasedIndex <= 0) {
             throw new IllegalArgumentException("Index must be >= 1 (was " + oneBasedIndex + ")");
@@ -91,8 +146,13 @@ public class TodoList {
         return oneBasedIndex - 1;
     }
 
-    /** Find all Todos in items which contains given description. */
-    public List<Todo> filter (String desc) {
+    /**
+     * Finds all tasks whose descriptions contain the given substring (case-insensitive).
+     *
+     * @param desc the search keyword
+     * @return list of matching tasks, or empty list if no matches
+     */
+    public List<Todo> filter(String desc) {
         if (desc == null || desc.isEmpty()) {
             return List.of();
         }

@@ -31,3 +31,5 @@ It helps you keep track of todos, deadlines, and events, while also supporting p
   Output is formatted via the `Ui` class for a consistent and friendly experience.
 
 ---
+
+## 🛠 Project Structure

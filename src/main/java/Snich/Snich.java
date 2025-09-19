@@ -25,6 +25,12 @@ public class Snich {
         this.ui = new Ui();
     }
 
+    /** used ChatGPT to clean up code in following methods.
+     * Originally used if else blocks, used AI to change o switch block.
+     * @param input
+     * @return String (response from Snich)
+     * @throws IOException
+     */
     public String getResponse(String input) throws IOException {
         String userInput = input;
 

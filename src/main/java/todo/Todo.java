@@ -10,12 +10,22 @@ public class Todo {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
+    /**
+     * public constructor.
+     * @param todo
+     */
     public Todo(String todo) {
         this.completion = false;
         this.setTodoType("T");
         this.todo = todo;
     }
 
+    /**
+     * Overloaded constructor.
+     * @param todo
+     * @param startTime
+     * @param endTime
+     */
     public Todo(String todo, LocalDateTime startTime, LocalDateTime endTime) {
         this.completion = false;
         this.todo = todo;

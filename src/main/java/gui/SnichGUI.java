@@ -25,7 +25,7 @@ public class SnichGUI extends Application {
     private TextField userInput;
     private Button sendButton;
     private Scene scene;
-    private Image dukeImage = new Image(this.getClass().getResourceAsStream("/tars.png"));
+    private Image snichImage = new Image(this.getClass().getResourceAsStream("/tars.png"));
     private Image userImage = new Image(this.getClass().getResourceAsStream("/Josephcooper1.jpeg"));
     private Snich snich = new Snich();
 
@@ -58,7 +58,7 @@ public class SnichGUI extends Application {
         stage.setScene(scene);
         stage.show();
 
-        stage.setTitle("Duke");
+        stage.setTitle("Snich");
         stage.setResizable(false);
         stage.setMinHeight(600.0);
         stage.setMinWidth(400.0);
@@ -110,7 +110,7 @@ public class SnichGUI extends Application {
      * the dialog container. Clears the user input after processing.
      */
     private void handleUserInput() throws IOException {
-        ImageView snichView = new ImageView(dukeImage);
+        ImageView snichView = new ImageView(snichImage);
 
         ImageView userView = new ImageView(userImage);
         userView.setFitWidth(100);     // target width (px)
@@ -120,10 +120,10 @@ public class SnichGUI extends Application {
         userView.setCache(true);
 
         String userText = userInput.getText();
-        String dukeText = snich.getResponse(userInput.getText());
+        String snichText = snich.getResponse(userInput.getText());
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(userText, userView),
-                DialogBox.getDukeDialog(dukeText, snichView)
+                DialogBox.getSnichDialog(snichText, snichView)
         );
         userInput.clear();
     }

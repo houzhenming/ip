@@ -60,7 +60,7 @@ public class TodoListTest {
         assertThrows(IllegalArgumentException.class, () -> TodoList.toZeroBased(-3));
     }
 
-    // Optional dummy tests in the same style as your DukeTest
+    // Optional dummy tests in the same style as your SnichTest
     @Test
     public void dummyTest() {
         assertEquals(2, 2);

@@ -54,7 +54,7 @@ public class DialogBox extends HBox {
         this.getChildren().addAll(bubble, avatar);
     }
 
-    /** Flip alignment + order for "received" messages (Duke). */
+    /** Flip alignment + order for "received" messages (Snich). */
     private void flip() {
         this.setAlignment(Pos.TOP_LEFT);
         ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
@@ -74,8 +74,8 @@ public class DialogBox extends HBox {
         );
     }
 
-    /** Tweak bubble style for receiver (duke/bot). */
-    private void styleAsDuke() {
+    /** Tweak bubble style for receiver (snich/bot). */
+    private void styleAsSnich() {
         // Neutral grey bubble, tail on bottom-left
         this.bubble.setStyle(
                 "-fx-background-color: #f1f3f4;" +
@@ -93,9 +93,9 @@ public class DialogBox extends HBox {
         return db;
     }
 
-    public static DialogBox getDukeDialog(String text, ImageView img) {
+    public static DialogBox getSnichDialog(String text, ImageView img) {
         var db = new DialogBox(text, img);
-        db.styleAsDuke();
+        db.styleAsSnich();
         db.flip(); // Left-aligned order: [avatar][bubble]
         return db;
     }

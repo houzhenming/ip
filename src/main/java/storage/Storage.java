@@ -36,56 +36,59 @@ public class Storage {
         }
     }
 
-    /** Load tasks from storage and return them. */
     public List<Todo> load() throws IOException {
         List<Todo> loaded = new ArrayList<>();
-
         try (Scanner sc = new Scanner(storageFile)) {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine().trim();
-                if (line.isEmpty()) {
-                    continue; // skip empty lines early
+                if (!line.isEmpty()) {
+                    Todo task = parseTask(line);
+                    if (task != null) loaded.add(task);
                 }
-
-                String type = line.substring(1, 2); // T, D, or E
-                boolean completed = line.charAt(4) == 'X';
-                Todo task;
-
-                switch (type) {
-                    case "T":
-                        String desc = line.substring(7);
-                        task = new Todo(desc);
-                        break;
-
-                    case "D":
-                        int byIdx = line.indexOf("(by");
-                        String dDesc = line.substring(7, byIdx).trim();
-                        String byStr = line.substring(byIdx + 4, line.length() - 1).trim();
-                        LocalDateTime by = LocalDateTime.parse(byStr, formatter);
-                        task = new Todo.Deadline(dDesc, by);
-                        break;
-
-                    case "E":
-                        int fromIdx = line.indexOf("(from:");
-                        int toIdx = line.indexOf("to:", fromIdx);
-                        String eDesc = line.substring(7, fromIdx).trim();
-                        String fromStr = line.substring(fromIdx + 6, toIdx).trim();
-                        String toStr = line.substring(toIdx + 3, line.length() - 1).trim();
-                        LocalDateTime from = LocalDateTime.parse(fromStr, formatter);
-                        LocalDateTime to = LocalDateTime.parse(toStr, formatter);
-                        task = new Todo.Event(eDesc, from, to);
-                        break;
-
-                    default:
-                        continue; // unknown type, skip this line
-                }
-
-                task.setCompletion(completed);
-                loaded.add(task);
             }
         }
-
         return loaded;
+    }
+
+    /** Parse one task line and return a Todo object, or null if invalid. */
+    private Todo parseTask(String line) {
+        try {
+            String type = line.substring(1, 2);
+            boolean completed = line.charAt(4) == 'X';
+            Todo task = switch (type) {
+                case "T" -> parseTodo(line);
+                case "D" -> parseDeadline(line);
+                case "E" -> parseEvent(line);
+                default -> null;
+            };
+            if (task != null) task.setCompletion(completed);
+            return task;
+        } catch (Exception e) {
+            return null; // ignore malformed lines
+        }
+    }
+
+    private Todo parseTodo(String line) {
+        return new Todo(line.substring(7));
+    }
+
+    private Todo parseDeadline(String line) {
+        int byIdx = line.indexOf("(by");
+        String desc = line.substring(7, byIdx).trim();
+        String byStr = line.substring(byIdx + 4, line.length() - 1).trim();
+        LocalDateTime by = LocalDateTime.parse(byStr, formatter);
+        return new Todo.Deadline(desc, by);
+    }
+
+    private Todo parseEvent(String line) {
+        int fromIdx = line.indexOf("(from:");
+        int toIdx = line.indexOf("to:", fromIdx);
+        String desc = line.substring(7, fromIdx).trim();
+        String fromStr = line.substring(fromIdx + 6, toIdx).trim();
+        String toStr = line.substring(toIdx + 3, line.length() - 1).trim();
+        LocalDateTime from = LocalDateTime.parse(fromStr, formatter);
+        LocalDateTime to = LocalDateTime.parse(toStr, formatter);
+        return new Todo.Event(desc, from, to);
     }
 
     /** Upsert a single task line at index. */

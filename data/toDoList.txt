@@ -1,3 +1,2 @@
 [T] [ ] test
-[T] [ ] another thing
 [T] [ ] buy milk

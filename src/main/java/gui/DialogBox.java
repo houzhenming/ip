@@ -21,37 +21,49 @@ public class DialogBox extends HBox {
     private static final double MAX_BUBBLE_WIDTH = 420;
 
     private DialogBox(String text, ImageView imageView) {
+        initRoot();
+        this.avatar = prepareAvatar(imageView);
+        this.bubble = buildBubble(text);
+        this.getChildren().addAll(bubble, avatar);
+    }
+
+    /* ---------- helpers ---------- */
+
+    private void initRoot() {
         this.setAlignment(Pos.TOP_RIGHT);
         this.setSpacing(10);
         this.setPadding(new Insets(6, 12, 6, 12));
+    }
 
-        // Avatar (circular clip like Telegram)
-        this.avatar = imageView;
-        this.avatar.setFitWidth(AVATAR_SIZE);
-        this.avatar.setFitHeight(AVATAR_SIZE);
-        Circle clip = new Circle(AVATAR_SIZE / 2.0, AVATAR_SIZE / 2.0, AVATAR_SIZE / 2.0);
-        this.avatar.setClip(clip);
+    private ImageView prepareAvatar(ImageView img) {
+        img.setFitWidth(AVATAR_SIZE);
+        img.setFitHeight(AVATAR_SIZE);
+        img.setClip(new Circle(AVATAR_SIZE / 2.0, AVATAR_SIZE / 2.0, AVATAR_SIZE / 2.0));
+        return img;
+    }
 
-        // Bubble
-        this.bubble = new Label(text);
-        this.bubble.setWrapText(true);
-        this.bubble.setMaxWidth(MAX_BUBBLE_WIDTH);
-        this.bubble.setPadding(new Insets(10, 14, 10, 14));
-        this.bubble.setStyle(
-                "-fx-background-color: #d2e3ff;" +           // default user color
+    private Label buildBubble(String text) {
+        Label lbl = new Label(text);
+        lbl.setWrapText(true);
+        lbl.setMaxWidth(MAX_BUBBLE_WIDTH);
+        lbl.setPadding(new Insets(10, 14, 10, 14));
+        lbl.setStyle(
+                "-fx-background-color: #d2e3ff;" +
                         "-fx-text-fill: -fx-text-base-color;" +
-                        "-fx-background-radius: 16 16 4 16;" +       // one corner sharper (tail side)
+                        "-fx-background-radius: 16 16 4 16;" +
                         "-fx-font-size: 13px;" +
                         "-fx-line-spacing: 2px;"
         );
+        lbl.setEffect(defaultShadow());
+        return lbl;
+    }
 
+    private DropShadow defaultShadow() {
         DropShadow ds = new DropShadow();
         ds.setRadius(4);
         ds.setOffsetY(1.5);
         ds.setColor(Color.rgb(0, 0, 0, 0.12));
-        this.bubble.setEffect(ds);
-
-        this.getChildren().addAll(bubble, avatar);
+        return ds;
     }
 
     /** Flip alignment + order for "received" messages (Snich). */

@@ -1,6 +1,9 @@
 package storage;
 
-import todo.Todo;
+import task.Deadline;
+import task.Event;
+import task.Task;
+import task.Todo;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,13 +39,13 @@ public class Storage {
         }
     }
 
-    public List<Todo> load() throws IOException {
-        List<Todo> loaded = new ArrayList<>();
+    public List<Task> load() throws IOException {
+        List<Task> loaded = new ArrayList<>();
         try (Scanner sc = new Scanner(storageFile)) {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine().trim();
                 if (!line.isEmpty()) {
-                    Todo task = parseTask(line);
+                    Task task = parseTask(line);
                     if (task != null) loaded.add(task);
                 }
             }
@@ -50,12 +53,12 @@ public class Storage {
         return loaded;
     }
 
-    /** Parse one task line and return a Todo object, or null if invalid. */
-    private Todo parseTask(String line) {
+    /** Parse one task line and return a Task object, or null if invalid. */
+    private Task parseTask(String line) {
         try {
             String type = line.substring(1, 2);
             boolean completed = line.charAt(4) == 'X';
-            Todo task = switch (type) {
+            Task task = switch (type) {
                 case "T" -> parseTodo(line);
                 case "D" -> parseDeadline(line);
                 case "E" -> parseEvent(line);
@@ -68,19 +71,19 @@ public class Storage {
         }
     }
 
-    private Todo parseTodo(String line) {
+    private Task parseTodo(String line) {
         return new Todo(line.substring(7));
     }
 
-    private Todo parseDeadline(String line) {
+    private Task parseDeadline(String line) {
         int byIdx = line.indexOf("(by");
         String desc = line.substring(7, byIdx).trim();
         String byStr = line.substring(byIdx + 4, line.length() - 1).trim();
         LocalDateTime by = LocalDateTime.parse(byStr, formatter);
-        return new Todo.Deadline(desc, by);
+        return new Deadline(desc, by);
     }
 
-    private Todo parseEvent(String line) {
+    private Task parseEvent(String line) {
         int fromIdx = line.indexOf("(from:");
         int toIdx = line.indexOf("to:", fromIdx);
         String desc = line.substring(7, fromIdx).trim();
@@ -88,11 +91,11 @@ public class Storage {
         String toStr = line.substring(toIdx + 3, line.length() - 1).trim();
         LocalDateTime from = LocalDateTime.parse(fromStr, formatter);
         LocalDateTime to = LocalDateTime.parse(toStr, formatter);
-        return new Todo.Event(desc, from, to);
+        return new Event(desc, from, to);
     }
 
     /** Upsert a single task line at index. */
-    public void saveAt(Todo t, int index) throws IOException {
+    public void saveAt(Task t, int index) throws IOException {
         Path path = Paths.get(storageFile.getAbsolutePath());
         List<String> lines = Files.exists(path) ? Files.readAllLines(path) : new ArrayList<>();
         String line = t.toString();

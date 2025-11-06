@@ -1,17 +1,17 @@
-package todo;
+package task;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TodoList {
-    private final ArrayList<Todo> items;
+public class TaskList {
+    private final ArrayList<Task> items;
 
-    public TodoList() {
+    public TaskList() {
         this.items = new ArrayList<>();
     }
 
-    public TodoList(List<Todo> initial) {
+    public TaskList(List<Task> initial) {
         this.items = new ArrayList<>(initial == null ? List.of() : initial);
     }
 
@@ -29,7 +29,7 @@ public class TodoList {
      *
      * @return read-only list of todos
      */
-    public List<Todo> asList() {
+    public List<Task> asList() {
         return Collections.unmodifiableList(items);
     }
 
@@ -47,7 +47,7 @@ public class TodoList {
      * @return the added todo
      * @throws IllegalArgumentException if the task is null
      */
-    public Todo add(Todo t) {
+    public Task add(Task t) {
         if (t == null) throw new IllegalArgumentException("Task cannot be null");
         items.add(t);
         return t;
@@ -60,11 +60,11 @@ public class TodoList {
      * @return number of tasks added
      * @throws IllegalArgumentException if the list is null or contains a null task
      */
-    public int add(List<Todo> todos) {
+    public int add(List<Task> todos) {
         if (todos == null) {
             throw new IllegalArgumentException("Task list cannot be null");
         }
-        for (Todo t : todos) {
+        for (Task t : todos) {
             if (t == null) {
                 throw new IllegalArgumentException("Task list contains null task");
             }
@@ -80,7 +80,7 @@ public class TodoList {
      * @return the removed task
      * @throws IllegalArgumentException if index is invalid
      */
-    public Todo remove(int oneBasedIndex) {
+    public Task remove(int oneBasedIndex) {
         int i = toZeroBased(oneBasedIndex);
         return items.remove(i);
     }
@@ -92,7 +92,7 @@ public class TodoList {
      * @return the retrieved task
      * @throws IllegalArgumentException if index is invalid
      */
-    public Todo get(int oneBasedIndex) {
+    public Task get(int oneBasedIndex) {
         int i = toZeroBased(oneBasedIndex);
         return items.get(i);
     }
@@ -103,8 +103,8 @@ public class TodoList {
      * @param oneBasedIndex index of the task to mark (1-based)
      * @return the updated task
      */
-    public Todo mark(int oneBasedIndex) {
-        Todo t = get(oneBasedIndex);
+    public Task mark(int oneBasedIndex) {
+        Task t = get(oneBasedIndex);
         t.setCompletion(true);
         return t;
     }
@@ -115,8 +115,8 @@ public class TodoList {
      * @param oneBasedIndex index of the task to unmark (1-based)
      * @return the updated task
      */
-    public Todo unmark(int oneBasedIndex) {
-        Todo t = get(oneBasedIndex);
+    public Task unmark(int oneBasedIndex) {
+        Task t = get(oneBasedIndex);
         t.setCompletion(false);
         return t;
     }
@@ -127,7 +127,7 @@ public class TodoList {
      * @param t the task to add
      * @return 1-based index of the added task
      */
-    public int addAndIndex(Todo t) {
+    public int addAndIndex(Task t) {
         add(t);
         return items.size(); // new item is last → 1-based index
     }
@@ -152,14 +152,14 @@ public class TodoList {
      * @param desc the search keyword
      * @return list of matching tasks, or empty list if no matches
      */
-    public List<Todo> filter(String desc) {
+    public List<Task> filter(String desc) {
         if (desc == null || desc.isEmpty()) {
             return List.of();
         }
         String needle = desc.toLowerCase();
         return items.stream()
                 .filter(x -> {
-                    String haystack = x.getTodo();
+                    String haystack = x.getDescription();
                     return haystack != null && haystack.toLowerCase().contains(needle);
                 })
                 .toList();

@@ -24,7 +24,7 @@ Hello from
               '"""'
 
 What can I do for you?
-You: todo borrow book
+You: task borrow book
     ____________________________________________________________
      Got it. I've added this task:
        [T] [ ] borrow book

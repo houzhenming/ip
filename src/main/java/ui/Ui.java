@@ -1,6 +1,7 @@
 package ui;
 
-import todo.Todo;
+import task.Task;
+import task.Todo;
 
 import java.util.List;
 import java.util.Scanner;
@@ -54,7 +55,7 @@ public class Ui {
     }
 
     // ---- changed from void ----
-    public String showList(List<Todo> tasks) {
+    public String showList(List<Task> tasks) {
         StringBuilder sb = new StringBuilder();
         sb.append("Here are the tasks in your list:\n");
         for (int i = 0; i < tasks.size(); i++) {
@@ -65,7 +66,7 @@ public class Ui {
     }
 
     // ---- changed from void ----
-    public String showFind(List<Todo> tasks) {
+    public String showFind(List<Task> tasks) {
         StringBuilder sb = new StringBuilder();
         sb.append("Here are the tasks that match your description:\n");
         for (int i = 0; i < tasks.size(); i++) {
@@ -75,7 +76,7 @@ public class Ui {
     }
 
     // ---- changed from void ----
-    public String showAdded(Todo t, int total) {
+    public String showAdded(Task t, int total) {
         // exactly what was printed, line by line
         return "Got it. I've added this task:\n"
                 + "  " + t + "\n"
@@ -83,7 +84,7 @@ public class Ui {
     }
 
     // ---- changed from void ----
-    public String showRemoved(Todo t, int totalAfterRemoval) {
+    public String showRemoved(Task t, int totalAfterRemoval) {
         return "Removed task: " + t + "\n"
                 + "Now you have " + totalAfterRemoval + " tasks.";
     }

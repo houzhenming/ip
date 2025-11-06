@@ -1,4 +1,4 @@
-todo borrow book
-todo borrow book
+task borrow book
+task borrow book
 deadline return book /by Sunday
 event project meeting /from Mon 2pm /to 4pm

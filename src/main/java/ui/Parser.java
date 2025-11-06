@@ -73,7 +73,7 @@ public class Parser {
             return ParsedCommand.find(desc);
         }
 
-        if (lower.startsWith("todo")) {
+        if (lower.startsWith("task")) {
             String desc = s.substring(4).trim();
             if (desc.isEmpty()) throw new IllegalArgumentException("todo description cannot be empty");
             return ParsedCommand.todo(desc);

@@ -1,8 +1,11 @@
 package Snich;
 
 import storage.Storage;
-import todo.Todo;
-import todo.TodoList;
+import task.Deadline;
+import task.Event;
+import task.Task;
+import task.TaskList;
+import task.Todo;
 import ui.Parser;
 import ui.Ui;
 
@@ -10,7 +13,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 public class Snich {
-    private final TodoList todoList;
+    private final TaskList taskList;
     private final Storage storage;
     private final Parser parser;
     private final Ui ui;
@@ -20,13 +23,13 @@ public class Snich {
 
     public Snich() throws IOException {
         this.storage = new Storage("data/toDoList.txt", FORMATTER);
-        this.todoList = new TodoList(storage.load());
-        this.parser = new Parser(Todo.STORAGE_FORMAT);
+        this.taskList = new TaskList(storage.load());
+        this.parser = new Parser(Task.STORAGE_FORMAT);
         this.ui = new Ui();
     }
 
     /** used ChatGPT to clean up code in following methods.
-     * Originally used if else blocks, used AI to change o switch block.
+     * Originally used if else blocks, used AI to change to switch block.
      * @param input
      * @return String (response from Snich)
      * @throws IOException
@@ -76,7 +79,7 @@ public class Snich {
      * @return a formatted list of todos from the UI
      */
     private String handleList() {
-        return ui.showList(todoList.asList());
+        return ui.showList(taskList.asList());
     }
 
     /**
@@ -86,7 +89,7 @@ public class Snich {
      * @return a formatted list of matching todos from the UI
      */
     private String handleFind(String query) {
-        return ui.showFind(todoList.filter(query));
+        return ui.showFind(taskList.filter(query));
     }
 
     /**
@@ -96,7 +99,7 @@ public class Snich {
      * @param oneBasedIndex the 1-based index to validate
      */
     private void validateIndex(int oneBasedIndex) {
-        assert oneBasedIndex > 0 && oneBasedIndex <= todoList.size()
+        assert oneBasedIndex > 0 && oneBasedIndex <= taskList.size()
                 : "Index out of range: " + oneBasedIndex;
     }
 
@@ -109,9 +112,9 @@ public class Snich {
      */
     private String handleMark(int index) throws IOException {
         validateIndex(index);
-        Todo t = todoList.mark(index);
-        storage.saveAt(t, TodoList.toZeroBased(index));
-        return ui.showList(todoList.asList());
+        Task t = taskList.mark(index);
+        storage.saveAt(t, TaskList.toZeroBased(index));
+        return ui.showList(taskList.asList());
     }
 
     /**
@@ -123,9 +126,9 @@ public class Snich {
      */
     private String handleUnmark(int index) throws IOException {
         validateIndex(index);
-        Todo t = todoList.unmark(index);
-        storage.saveAt(t, TodoList.toZeroBased(index));
-        return ui.showList(todoList.asList());
+        Task t = taskList.unmark(index);
+        storage.saveAt(t, TaskList.toZeroBased(index));
+        return ui.showList(taskList.asList());
     }
 
     /**
@@ -137,9 +140,9 @@ public class Snich {
      */
     private String handleDelete(int index) throws IOException {
         validateIndex(index);
-        Todo removed = todoList.remove(index);
-        storage.deleteAt(TodoList.toZeroBased(index));
-        return ui.showRemoved(removed, todoList.size());
+        Task removed = taskList.remove(index);
+        storage.deleteAt(TaskList.toZeroBased(index));
+        return ui.showRemoved(removed, taskList.size());
     }
 
     /**
@@ -151,9 +154,9 @@ public class Snich {
      */
     private String handleTodo(String desc) throws IOException {
         Todo t = new Todo(desc);
-        int idx = todoList.addAndIndex(t); // 1-based
+        int idx = taskList.addAndIndex(t); // 1-based
         storage.saveAt(t, idx - 1);
-        return ui.showAdded(t, todoList.size());
+        return ui.showAdded(t, taskList.size());
     }
 
     /**
@@ -165,10 +168,10 @@ public class Snich {
      * @throws IOException if saving to storage fails
      */
     private String handleDeadline(String desc, java.time.LocalDateTime by) throws IOException {
-        Todo.Deadline d = new Todo.Deadline(desc, by);
-        int idx = todoList.addAndIndex(d);
+        Deadline d = new Deadline(desc, by);
+        int idx = taskList.addAndIndex(d);
         storage.saveAt(d, idx - 1);
-        return ui.showAdded(d, todoList.size());
+        return ui.showAdded(d, taskList.size());
     }
 
     /**
@@ -181,10 +184,10 @@ public class Snich {
      * @throws IOException if saving to storage fails
      */
     private String handleEvent(String desc, java.time.LocalDateTime from, java.time.LocalDateTime to) throws IOException {
-        Todo.Event e = new Todo.Event(desc, from, to);
-        int idx = todoList.addAndIndex(e);
+        Event e = new Event(desc, from, to);
+        int idx = taskList.addAndIndex(e);
         storage.saveAt(e, idx - 1);
-        return ui.showAdded(e, todoList.size());
+        return ui.showAdded(e, taskList.size());
     }
 
     /**
@@ -196,8 +199,8 @@ public class Snich {
      */
     private String handleRebase(String filepath) throws IOException {
         storage.newFilePath(filepath);
-        todoList.clear();
-        todoList.add(storage.load());
+        taskList.clear();
+        taskList.add(storage.load());
         return ui.showRebased(filepath);
     }
 }

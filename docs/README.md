@@ -9,7 +9,7 @@ It helps you keep track of todos, deadlines, and events, while also supporting p
 
 - **Basic Commands**
   - `list` – show all tasks
-  - `todo <description>` – add a todo
+  - `task <description>` – add a task
   - `deadline <description> /by <yyyy-MM-dd HH:mm>` – add a deadline task
   - `event <description> /from <yyyy-MM-dd HH:mm> /to <yyyy-MM-dd HH:mm>` – add an event
   - `mark <index>` – mark a task as done

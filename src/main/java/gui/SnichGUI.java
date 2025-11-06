@@ -6,17 +6,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.image.Image;
 
-
-import java.awt.*;
 import java.io.IOException;
-
 
 public class SnichGUI extends Application {
 
@@ -25,59 +22,68 @@ public class SnichGUI extends Application {
     private TextField userInput;
     private Button sendButton;
     private Scene scene;
-    private Image snichImage = new Image(this.getClass().getResourceAsStream("/tars.png"));
-    private Image userImage = new Image(this.getClass().getResourceAsStream("/Josephcooper1.jpeg"));
-    private Snich snich = new Snich();
+    private final Image snichImage = new Image(this.getClass().getResourceAsStream("/tars.png"));
+    private final Image userImage = new Image(this.getClass().getResourceAsStream("/Josephcooper1.jpeg"));
+    private final Snich snich = new Snich();
 
-    public SnichGUI() throws IOException {
-    }
+    public SnichGUI() throws IOException { }
 
     @Override
     public void start(Stage stage) {
-        //Setting up required components
+        initContainers();
+        AnchorPane mainLayout = buildLayout();
+        scene = new Scene(mainLayout);
+        configureStage(stage, scene);
+        configureScrollPane();
+        configureSizing(mainLayout);
+        layoutAnchors();
+        wireEvents();
+        enableAutoScroll();
+        showWelcome();
+    }
 
-        ImageView userView = new ImageView(userImage);
-        userView.setFitWidth(100);     // target width (px)
-        userView.setFitHeight(100);    // target height (px)
-        userView.setPreserveRatio(true);
-        userView.setSmooth(true);     // nicer downscaling
-        userView.setCache(true);
+    /* ---------- helpers ---------- */
 
+    private void initContainers() {
         scrollPane = new ScrollPane();
         dialogContainer = new VBox();
         scrollPane.setContent(dialogContainer);
 
         userInput = new TextField();
         sendButton = new Button("Send");
+    }
 
-        AnchorPane mainLayout = new AnchorPane();
-        mainLayout.getChildren().addAll(scrollPane, userInput, sendButton);
+    private AnchorPane buildLayout() {
+        AnchorPane root = new AnchorPane();
+        root.getChildren().addAll(scrollPane, userInput, sendButton);
+        return root;
+    }
 
-        scene = new Scene(mainLayout);
-
+    private void configureStage(Stage stage, Scene scene) {
         stage.setScene(scene);
-        stage.show();
-
         stage.setTitle("Snich");
         stage.setResizable(false);
         stage.setMinHeight(600.0);
         stage.setMinWidth(400.0);
+        stage.show();
+    }
 
-        mainLayout.setPrefSize(400.0, 600.0);
-
+    private void configureScrollPane() {
         scrollPane.setPrefSize(385, 535);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-
         scrollPane.setVvalue(1.0);
         scrollPane.setFitToWidth(true);
-
         dialogContainer.setPrefHeight(Region.USE_COMPUTED_SIZE);
+    }
 
+    private void configureSizing(AnchorPane root) {
+        root.setPrefSize(400.0, 600.0);
         userInput.setPrefWidth(325.0);
-
         sendButton.setPrefWidth(55.0);
+    }
 
+    private void layoutAnchors() {
         AnchorPane.setTopAnchor(scrollPane, 1.0);
 
         AnchorPane.setBottomAnchor(sendButton, 1.0);
@@ -85,26 +91,33 @@ public class SnichGUI extends Application {
 
         AnchorPane.setLeftAnchor(userInput, 1.0);
         AnchorPane.setBottomAnchor(userInput, 1.0);
+    }
 
-        showWelcome();
+    private void wireEvents() {
+        sendButton.setOnMouseClicked(e -> safeHandleUserInput());
+        userInput.setOnAction(e -> safeHandleUserInput());
+    }
 
-        sendButton.setOnMouseClicked((event) -> {
-            try {
-                handleUserInput();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        userInput.setOnAction((event) -> {
-            try {
-                handleUserInput();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+    private void enableAutoScroll() {
+        dialogContainer.heightProperty().addListener(o -> scrollPane.setVvalue(1.0));
+    }
 
-        dialogContainer.heightProperty().addListener((observable) -> scrollPane.setVvalue(1.0));
-        //More code to be added here later
+    private void safeHandleUserInput() {
+        try {
+            handleUserInput();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private ImageView createAvatar(Image img) {
+        ImageView v = new ImageView(img);
+        v.setFitWidth(100);
+        v.setFitHeight(100);
+        v.setPreserveRatio(true);
+        v.setSmooth(true);
+        v.setCache(true);
+        return v;
     }
 
     /**
@@ -113,16 +126,11 @@ public class SnichGUI extends Application {
      */
     private void handleUserInput() throws IOException {
         ImageView snichView = new ImageView(snichImage);
-
-        ImageView userView = new ImageView(userImage);
-        userView.setFitWidth(100);     // target width (px)
-        userView.setFitHeight(100);    // target height (px)
-        userView.setPreserveRatio(true);
-        userView.setSmooth(true);     // nicer downscaling
-        userView.setCache(true);
+        ImageView userView = createAvatar(userImage);
 
         String userText = userInput.getText();
-        String snichText = snich.getResponse(userInput.getText());
+        String snichText = snich.getResponse(userText);
+
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(userText, userView),
                 DialogBox.getSnichDialog(snichText, snichView)
@@ -138,6 +146,4 @@ public class SnichGUI extends Application {
         );
         userInput.clear();
     }
-
 }
-

@@ -57,6 +57,10 @@ public class Snich {
         };
     }
 
+    public String showWelcome() {
+        return ui.showWelcome();
+    }
+
     /**
      * Handles the "bye" command by returning the goodbye message.
      *

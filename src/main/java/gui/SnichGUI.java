@@ -86,6 +86,8 @@ public class SnichGUI extends Application {
         AnchorPane.setLeftAnchor(userInput, 1.0);
         AnchorPane.setBottomAnchor(userInput, 1.0);
 
+        showWelcome();
+
         sendButton.setOnMouseClicked((event) -> {
             try {
                 handleUserInput();
@@ -123,6 +125,15 @@ public class SnichGUI extends Application {
         String snichText = snich.getResponse(userInput.getText());
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(userText, userView),
+                DialogBox.getSnichDialog(snichText, snichView)
+        );
+        userInput.clear();
+    }
+
+    private void showWelcome() {
+        ImageView snichView = new ImageView(snichImage);
+        String snichText = snich.showWelcome();
+        dialogContainer.getChildren().addAll(
                 DialogBox.getSnichDialog(snichText, snichView)
         );
         userInput.clear();
